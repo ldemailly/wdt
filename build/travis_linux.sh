@@ -12,8 +12,17 @@ export PATH=$HOME/bin:$PATH
 export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
 openssl version
 if [[ "$CXX" == "clang++" ]] ; then
-  export CC=clang-3.6
-  export CXX=clang++-3.6
+  export LLVM_VERSION=3.7.1
+  wget http://llvm.org/releases/$LLVM_VERSION/clang+llvm-$LLVM_VERSION-x86_64-linux-gnu-ubuntu-14.04.tar.xz
+  mkdir $HOME/clang
+  tar xf clang+llvm-$LLVM_VERSION-x86_64-linux-gnu-ubuntu-14.04.tar.xz -C $HOME/clang --strip-components 1
+  export PATH=$HOME/clang/bin:$PATH
+  export LD_LIBARY_PATH=$HOME/clang/lib:$LD_LIBRARY_PATH
+#  export CC=clang-3.7
+#  export CXX=clang++-3.7
+  which $CXX || true
+#  ls -l $HOME/clang/bin
+  $CXX --version
 else
   ln -s /usr/bin/g++-4.9 $HOME/bin/g++
   ln -s /usr/bin/gcc-4.9 $HOME/bin/gcc
@@ -37,7 +46,9 @@ git clone https://github.com/floitsch/double-conversion.git
 git clone https://github.com/schuhschuh/gflags.git
 (mkdir gflags/build; cd gflags/build; cmake -DCMAKE_INSTALL_PREFIX=$HOME -DGFLAGS_NAMESPACE=google -DBUILD_SHARED_LIBS=on .. && make -j 4 && make install)
 git clone https://github.com/google/glog.git
-( cd glog && ./configure --with-gflags=$HOME --prefix=$HOME && make -j 4 && make install )
+(mkdir glog/build; cd glog/build; cmake -DCMAKE_INSTALL_PREFIX=$HOME -DBUILD_SHARED_LIBS=on .. && make -j 4 && make install)
+# ( cd glog && autoreconf --force --install && ./configure --with-gflags=$HOME --prefix=$HOME && make -j 4 && make install )
+# -Dgflags_DIR=$HOME -Dgflags_NAMESPACE=google
 git clone https://github.com/facebook/folly.git
 pwd ; ls -l
 cd wdt
